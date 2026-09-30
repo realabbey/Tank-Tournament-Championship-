@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tank Tournament</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#18233b;--text:#eef4ff;--muted:#9eacc7;--accent:#5eead4;--accent2:#60a5fa;--border:#263451;--danger:#fb7185;--gold:#fbbf24}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at 20% 0%,#17284c 0,#0b1020 40%);color:var(--text);line-height:1.5}
+button,input{font:inherit}button{cursor:pointer}
+header{position:sticky;top:0;z-index:10;background:rgba(11,16,32,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav{max-width:1150px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:22px}.brand{font-weight:900;font-size:1.2rem;letter-spacing:.4px;margin-right:auto}.brand span{color:var(--accent)}
+nav{display:flex;gap:6px;flex-wrap:wrap}nav a{color:var(--muted);text-decoration:none;padding:8px 11px;border-radius:9px}nav a:hover{background:var(--panel2);color:var(--text)}
+.btn{border:0;border-radius:10px;padding:10px 15px;font-weight:750;background:var(--accent);color:#06221f}.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}.btn.small{padding:7px 11px;font-size:.9rem}
+main{max-width:1150px;margin:auto;padding:28px 20px 70px}.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:28px;align-items:center;padding:55px 0}.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;font-size:.8rem}.hero h1{font-size:clamp(2.5rem,7vw,5rem);line-height:.98;margin:12px 0}.hero p{color:var(--muted);font-size:1.08rem;max-width:650px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.tank-art{height:290px;border:1px solid var(--border);border-radius:24px;background:linear-gradient(145deg,#182849,#10172a);position:relative;overflow:hidden;display:grid;place-items:center;box-shadow:0 25px 80px rgba(0,0,0,.3)}.tank{width:190px;height:105px;position:relative}.tank .body{position:absolute;bottom:8px;left:18px;width:155px;height:55px;border-radius:20px 20px 12px 12px;background:#4ade80;box-shadow:inset 0 -9px #24834b}.tank .top{position:absolute;left:60px;top:22px;width:70px;height:43px;border-radius:50%;background:#65d98a;border:7px solid #247746}.tank .barrel{position:absolute;left:120px;top:34px;width:78px;height:12px;border-radius:8px;background:#9de8b5;transform:rotate(-8deg);transform-origin:left}.wheel{position:absolute;bottom:0;width:33px;height:33px;border-radius:50%;background:#18233b;border:7px solid #6ee7a0}.w1{left:35px}.w2{left:78px}.w3{left:121px}
+section{margin-top:55px}.section-head{display:flex;justify-content:space-between;gap:15px;align-items:end;margin-bottom:18px}.section-head h2{margin:0;font-size:1.8rem}.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:rgba(18,26,45,.92);border:1px solid var(--border);border-radius:16px;padding:18px}.card h3{margin:5px 0 7px}.badge{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:4px 9px;font-size:.75rem;color:var(--accent);background:#102239}.badge.closed{color:#aeb9ce}.meta{color:var(--muted);font-size:.9rem}.card-actions{margin-top:15px;display:flex;gap:8px;align-items:center}
+table{width:100%;border-collapse:collapse;background:rgba(18,26,45,.92);border:1px solid var(--border);border-radius:16px;overflow:hidden}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--border)}th{color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.6px}tr:last-child td{border-bottom:0}.rank{font-weight:900;color:var(--gold)}
+.search{width:100%;max-width:350px;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:10px}
+.notice{padding:12px 14px;border:1px solid #27534f;background:#0e2525;border-radius:12px;color:#bdf9ee;margin-bottom:15px}
+footer{border-top:1px solid var(--border);padding:25px 20px;color:var(--muted);text-align:center}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;place-items:center;z-index:30;padding:20px}.modal.open{display:grid}.modal-box{width:min(430px,100%);background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;position:relative}.close{position:absolute;right:13px;top:10px;background:none;border:0;color:var(--muted);font-size:1.5rem}.form{display:grid;gap:12px}.form label{font-size:.85rem;color:var(--muted)}.form input{width:100%;margin-top:5px;padding:11px;border-radius:10px;border:1px solid var(--border);background:#0c1426;color:var(--text)}.form .btn{margin-top:5px}.tabs{display:flex;gap:8px;margin-bottom:15px}.tabs button{background:var(--panel2);color:var(--muted);border:1px solid var(--border);padding:8px 12px;border-radius:9px}.tabs button.active{background:var(--accent);color:#06221f}
+.empty{padding:25px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:14px}
+@media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:30px}.tank-art{height:220px}.grid{grid-template-columns:1fr 1fr}.nav{flex-wrap:wrap}.brand{width:100%;margin-right:0}nav{order:3;width:100%;overflow:auto}.section-head{align-items:start;flex-direction:column}}
+@media(max-width:540px){.grid{grid-template-columns:1fr}.hero h1{font-size:3rem}main{padding-left:14px;padding-right:14px}th:nth-child(3),td:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<header>
+<div class="nav">
+<div class="brand">Tank <span>Tournament</span></div>
+<nav>
+<a href="#home">Home</a><a href="#competitions">Competitions</a><a href="#rankings">Rankings</a><a href="#players">Players</a><a href="#news">News</a><a href="#rules">Rules</a>
+</nav>
+<button class="btn small" id="accountBtn">Sign in</button>
+</div>
+</header>
+
+<main>
+<section id="home" class="hero">
+<div>
+<div class="eyebrow">TankTrouble community competition</div>
+<h1>Play. Compete. Climb.</h1>
+<p>Tank Tournament is a community hub for TankTrouble players. Join competitions, build your record, follow the rankings, and keep up with tournament news.</p>
+<div class="hero-actions"><a class="btn" href="#competitions">View competitions</a><button class="btn secondary" id="heroJoin">Create account</button></div>
+</div>
+<div class="tank-art" aria-label="Tank illustration">
+<div class="tank"><div class="body"></div><div class="top"></div><div class="barrel"></div><div class="wheel w1"></div><div class="wheel w2"></div><div class="wheel w3"></div></div>
+</div>
+</section>
+
+<section id="competitions">
+<div class="section-head"><div><div class="eyebrow">Compete</div><h2>Competitions</h2></div><span class="muted" id="competitionCount"></span></div>
+<div id="competitionGrid" class="grid"></div>
+</section>
+
+<section id="rankings">
+<div class="section-head"><div><div class="eyebrow">Leaderboard</div><h2>Rankings</h2></div></div>
+<div id="rankingsWrap"></div>
+</section>
+
+<section id="players">
+<div class="section-head"><div><div class="eyebrow">Community</div><h2>Players</h2></div><input class="search" id="playerSearch" placeholder="Search players..."></div>
+<div id="playersGrid" class="grid"></div>
+</section>
+
+<section id="news">
+<div class="section-head"><div><div class="eyebrow">Updates</div><h2>News</h2></div></div>
+<div id="newsGrid" class="grid"></div>
+</section>
+
+<section id="rules">
+<div class="section-head"><div><div class="eyebrow">Know the game</div><h2>Rules</h2></div></div>
+<div class="grid">
+<div class="card"><h3>Fair play</h3><p class="muted">Play honestly, respect other players, and do not use exploits or cheats.</p></div>
+<div class="card"><h3>Competition entry</h3><p class="muted">Register before the competition closes. A player can register only once for each competition.</p></div>
+<div class="card"><h3>Community conduct</h3><p class="muted">Keep usernames, messages, and tournament interactions respectful and appropriate for the community.</p></div>
+</div>
+</section>
+</main>
+
+<footer>Tank Tournament • A TankTrouble community competition site</footer>
+
+<div class="modal" id="accountModal">
+<div class="modal-box">
+<button class="close" id="closeModal">×</button>
+<div class="tabs"><button id="loginTab" class="active">Sign in</button><button id="registerTab">Create account</button></div>
+<div id="accountForm"></div>
+</div>
+</div>
+
+<script>
+const competitions=[
+{id:1,name:"September Showdown",status:"Open",date:"October 4, 2026",players:0,max:16,description:"A community tournament for players ready to put their skills to the test."},
+{id:2,name:"Weekend Knockout",status:"Upcoming",date:"October 10, 2026",players:0,max:8,description:"A compact weekend competition with a small player field."},
+{id:3,name:"August Challenge",status:"Completed",date:"August 30, 2026",players:0,max:8,description:"The August community challenge has finished."}
+];
+const defaultPlayers=[
+{name:"TankMaster",points:1240,wins:18,losses:5},
+{name:"Blaster",points:1110,wins:15,losses:7},
+{name:"Ranger",points:980,wins:12,losses:8},
+{name:"TurboTank",points:910,wins:11,losses:9},
+{name:"Shadow",points:845,wins:9,losses:10}
+];
+const news=[
+{title:"Welcome to Tank Tournament",date:"September 30, 2026",text:"The Tank Tournament community site is now open. Create an account and explore the competition schedule."},
+{title:"September Showdown registrations",date:"September 30, 2026",text:"Registration is available for the September Showdown while spaces remain."}
+];
+
+function getUsers(){return JSON.parse(localStorage.getItem("tt_users")||"[]")}
+function saveUsers(v){localStorage.setItem("tt_users",JSON.stringify(v))}
+function currentUser(){return localStorage.getItem("tt_current_user")}
+function setCurrentUser(v){v?localStorage.setItem("tt_current_user",v):localStorage.removeItem("tt_current_user")}
+function getRegs(){return JSON.parse(localStorage.getItem("tt_regs")||"{}")}
+function saveRegs(v){localStorage.setItem("tt_regs",JSON.stringify(v))}
+function allPlayers(){
+ const users=getUsers().map(u=>({name:u.username,points:u.points||0,wins:u.wins||0,losses:u.losses||0}));
+ return [...defaultPlayers,...users];
+}
+function renderCompetitions(){
+ const regs=getRegs(), user=currentUser();
+ document.getElementById("competitionCount").textContent=competitions.length+" competitions";
+ document.getElementById("competitionGrid").innerHTML=competitions.map(c=>{
+   const count=(regs[c.id]||[]).length, full=count>=c.max, registered=user && (regs[c.id]||[]).includes(user);
+   const canJoin=c.status!=="Completed"&&!full;
+   return `<article class="card"><span class="badge ${c.status==="Completed"?"closed":""}">${c.status}</span><h3>${c.name}</h3><div class="meta">${c.date} • ${count}/${c.max} registered</div><p class="muted">${c.description}</p><div class="card-actions">${registered?'<span class="badge">Registered ✓</span>':canJoin?`<button class="btn small" onclick="registerCompetition(${c.id})">Register</button>`:'<span class="muted">'+(full?'Full':'Registration closed')+'</span>'}</div></article>`;
+ }).join("");
+}
+function registerCompetition(id){
+ const user=currentUser();
+ if(!user){openAccount("login");return}
+ const regs=getRegs(); regs[id]=regs[id]||[];
+ const comp=competitions.find(c=>c.id===id);
+ if(regs[id].includes(user)) return;
+ if(regs[id].length>=comp.max){alert("This competition is full.");return}
+ regs[id].push(user);saveRegs(regs);renderCompetitions();
+ alert("You are registered for "+comp.name+"!");
+}
+function renderRankings(){
+ const players=allPlayers().sort((a,b)=>b.points-a.points);
+ document.getElementById("rankingsWrap").innerHTML=`<table><thead><tr><th>#</th><th>Player</th><th>Points</th><th>Wins</th><th>Losses</th></tr></thead><tbody>${players.map((p,i)=>`<tr><td class="rank">${i+1}</td><td><strong>${escapeHtml(p.name)}</strong></td><td>${p.points}</td><td>${p.wins}</td><td>${p.losses}</td></tr>`).join("")}</tbody></table>`;
+}
+function renderPlayers(filter=""){
+ const players=allPlayers().filter(p=>p.name.toLowerCase().includes(filter.toLowerCase()));
+ document.getElementById("playersGrid").innerHTML=players.length?players.map(p=>`<article class="card"><span class="badge">${p.points} points</span><h3>${escapeHtml(p.name)}</h3><p class="muted">${p.wins} wins • ${p.losses} losses</p></article>`).join(""):'<div class="empty">No players found.</div>';
+}
+function renderNews(){
+ document.getElementById("newsGrid").innerHTML=news.map(n=>`<article class="card"><div class="meta">${n.date}</div><h3>${n.title}</h3><p class="muted">${n.text}</p></article>`).join("");
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+const modal=document.getElementById("accountModal");
+function openAccount(mode="login"){modal.classList.add("open");showAccountForm(mode)}
+function closeAccount(){modal.classList.remove("open")}
+function showAccountForm(mode){
+ document.getElementById("loginTab").classList.toggle("active",mode==="login");
+ document.getElementById("registerTab").classList.toggle("active",mode==="register");
+ document.getElementById("accountForm").innerHTML=mode==="login"?`
+ <h2>Welcome back</h2><p class="muted">Sign in to register for competitions.</p>
+ <form class="form" onsubmit="login(event)"><label>Username<input id="loginUser" required autocomplete="username"></label><label>Password<input id="loginPass" type="password" required autocomplete="current-password"></label><button class="btn">Sign in</button></form>`:
+ `<h2>Create your account</h2><p class="muted">Your account is saved locally in this browser.</p>
+ <form class="form" onsubmit="register(event)"><label>Username<input id="regUser" required minlength="3" maxlength="20"></label><label>Email<input id="regEmail" type="email" required></label><label>Password<input id="regPass" type="password" required minlength="6"></label><button class="btn">Create account</button></form>`;
+}
+function register(e){
+ e.preventDefault();const username=document.getElementById("regUser").value.trim(),email=document.getElementById("regEmail").value.trim(),password=document.getElementById("regPass").value;
+ const users=getUsers();if(users.some(u=>u.username.toLowerCase()===username.toLowerCase())){alert("That username is already in use.");return}
+ users.push({username,email,password,points:0,wins:0,losses:0});saveUsers(users);setCurrentUser(username);closeAccount();updateAccountButton();renderRankings();renderPlayers();alert("Account created. Welcome to Tank Tournament!");
+}
+function login(e){
+ e.preventDefault();const username=document.getElementById("loginUser").value.trim(),password=document.getElementById("loginPass").value;
+ const user=getUsers().find(u=>u.username.toLowerCase()===username.toLowerCase()&&u.password===password);
+ if(!user){alert("Username or password is incorrect.");return}
+ setCurrentUser(user.username);closeAccount();updateAccountButton();renderCompetitions();alert("Signed in as "+user.username+".");
+}
+function logout(){setCurrentUser(null);updateAccountButton();renderCompetitions()}
+function updateAccountButton(){
+ const u=currentUser();const b=document.getElementById("accountBtn");
+ if(u){b.textContent=u+" • Sign out";b.onclick=logout}else{b.textContent="Sign in";b.onclick=()=>openAccount("login")}
+}
+document.getElementById("heroJoin").onclick=()=>openAccount("register");
+document.getElementById("closeModal").onclick=closeAccount;
+document.getElementById("loginTab").onclick=()=>showAccountForm("login");
+document.getElementById("registerTab").onclick=()=>showAccountForm("register");
+document.getElementById("playerSearch").addEventListener("input",e=>renderPlayers(e.target.value));
+modal.addEventListener("click",e=>{if(e.target===modal)closeAccount()});
+renderCompetitions();renderRankings();renderPlayers();renderNews();updateAccountButton();
+</script>
+</body>
+</html>
